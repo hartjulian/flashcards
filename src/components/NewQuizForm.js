@@ -3,9 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import ROUTES from "../app/routes";
-// import selectors
 import { selectTopics } from "../features/topics/topicsSlice";
 import { addQuiz } from "../features/quizzes/quizzesSlice";
+import { addCard } from "../features/cards/cardsSlice";
 
 export default function NewQuizForm() {
   const [name, setName] = useState("");
@@ -20,12 +20,20 @@ export default function NewQuizForm() {
     if (name.length === 0) {
       return;
     }
+    if (cards.length === 0) {
+      window.alert("Create at least one card for this quiz.");
+      return;
+    }
 
     const cardIds = [];
-
     // create the new cards here and add each card's id to cardIds
-    // create the new quiz here
+    cards.forEach((card) => {
+      const cardId = uuidv4();
+      cardIds.push(cardId);
+      dispatch(addCard({...card, id: cardId}));
+    });
 
+    // create the new quiz here
     const quizId = uuidv4();
 
     // dispatch add quiz action 
@@ -101,7 +109,7 @@ export default function NewQuizForm() {
         ))}
         <div className="actions-container">
           <button onClick={addCardInputs}>Add a Card</button>
-          <button type="submit">Create Quiz</button>
+          <button type="submit" disabled={(topicId === "" || name === "" ? true : false)}>Create Quiz</button>
         </div>
       </form>
     </section>
